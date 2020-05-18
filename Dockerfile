@@ -27,7 +27,7 @@ RUN curl -fSL https://github.com/imr/ngspice/archive/ngspice-$NGSPICE_VERSION.ta
     && rm ngspice.tar.gz \
     && cd /usr/src/ngspice-ngspice-$NGSPICE_VERSION \
     && ./autogen.sh \
-    && ./configure --with-x --with-readline=yes --with-ngshared --disable-debug --enable-cider --enable-openmp\
+    && ./configure --with-x --with-readline=yes --with-ngshared --disable-debug --enable-cider --enable-openmp --enable-xspice \
     && make && make install \
     && rm -rf  /usr/src/ngspice-ngspice-$NGSPICE_VERSION
 

@@ -7,10 +7,10 @@ from PySpice.Spice.NgSpice.Shared import NgSpiceShared
 
 ngspice = NgSpiceShared.new_instance()
 
-print(ngspice.exec_command('version -f'))
-print(ngspice.exec_command('print all'))
-print(ngspice.exec_command('devhelp'))
-print(ngspice.exec_command('devhelp resistor'))
+# print(ngspice.exec_command('version -f'))
+# print(ngspice.exec_command('print all'))
+# print(ngspice.exec_command('devhelp'))
+# print(ngspice.exec_command('devhelp resistor'))
 
 circuit = '''
 .title Voltage Multiplier
@@ -54,10 +54,70 @@ R1 5 6 1MegOhm
 .end
 '''
 
+circuit = "Multiple dc sources v1 1 0 dc 24 v2 3 0 dc 15 r1 1 2 10k r2 2 3 8.1k r3 2 0 4.7k .end "
+
+circuit = '''
+.title None
+.subckt Fonte input output 
+Vin input output 10V
+.ends Fonte
+X1 2 1 Fonte
+R1 3 1 1K
+R2 2 3 2K
+.options TEMP = 25°C
+.options TNOM = 25°C
+.ic 
+.tran 100us 3ms 0s
+.end
+'''
+
+circuit = '''
+* Simple RC Circuit
+
+ 
+
+*Control section determines type of analysis
+
+.control
+
+destroy all
+
+echo
+
+TRAN 0.1MS 20MS
+
+plot V(1) V(2) V(3)
+
+.endc
+
+ 
+
+*These next lines give circuit layout (netlist)
+
+R1 1 2 1k
+
+R2 2 0 1k
+
+R3 3 0 1k
+
+C1 2 3 1u
+
+ 
+
+*form of pulse -- PULSE(V1 V2 TD TR TF PW PER)
+
+VVin 1 0 PULSE(0 5 0 0 0 5m 10m)
+
+ 
+
+.end
+'''
+
 ngspice.load_circuit(circuit)
 
-print(ngspice.show('c3'))
-print(ngspice.showmod('c3'))
+
+print(ngspice.show('r1'))
+print(ngspice.showmod('r1'))
 
 ngspice.run()
 print('Plots:', ngspice.plot_names)
@@ -67,3 +127,4 @@ print(ngspice.status())
 
 plot = ngspice.plot(simulation=None, plot_name=ngspice.last_plot)
 print(plot)
+

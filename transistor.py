@@ -12,12 +12,9 @@ from PySpice.Spice.Library import SpiceLibrary
 from PySpice.Spice.Netlist import Circuit
 from PySpice.Unit import *
 
+# ===== Create circuit =====
 
 spice_library = SpiceLibrary("libraries")
-
-
-figure = plt.figure(1, (20, 10))
-
 circuit = Circuit('Transistor')
 
 Vbase = circuit.V('base', '1', circuit.gnd, 1@u_V)
@@ -28,11 +25,14 @@ circuit.R('collector', 2, 'collector', 1@u_kΩ)
 # circuit.model('generic', 'npn')
 circuit.include(spice_library['2n2222a'])
 circuit.BJT(1, 'collector', 'base', circuit.gnd, model='2n2222a')
+print(circuit)
 
+# ===== Run simulation =====
 
 simulator = circuit.simulator(temperature=25, nominal_temperature=25)
 analysis = simulator.dc(Vbase=slice(0, 3, .01))
 
+figure = plt.figure(1, (20, 10))
 axe1 = plt.subplot(221)
 axe1.plot(analysis.base, u_mA(-analysis.Vbase)) # Fixme: I_Vbase
 axe1.axvline(x=.65, color='red')
@@ -98,4 +98,4 @@ axe4.legend(('Ic(Ib)',), loc=(.1,.8))
 
 plt.tight_layout()
 plt.show()
-plt.savefig('iop.png')
+plt.savefig('transistor.png')
