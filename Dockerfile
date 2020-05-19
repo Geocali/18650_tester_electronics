@@ -28,8 +28,8 @@ RUN curl -fSL https://github.com/imr/ngspice/archive/ngspice-$NGSPICE_VERSION.ta
     && cd /usr/src/ngspice-ngspice-$NGSPICE_VERSION \
     && ./autogen.sh \
     && ./configure --with-x --with-readline=yes --with-ngshared --disable-debug --enable-cider --enable-openmp --enable-xspice \
-    && make && make install \
-    && rm -rf  /usr/src/ngspice-ngspice-$NGSPICE_VERSION
+    && make 2>&1 | tee make.log && make install
+    # && rm -rf  /usr/src/ngspice-ngspice-$NGSPICE_VERSION
 
 # RUN apt install libx11 libxaw
 
@@ -39,9 +39,16 @@ ENV LD_LIBRARY_PATH /usr/local/lib
 RUN apt install -y software-properties-common wget && add-apt-repository ppa:deadsnakes/ppa -y && apt install -y python3 python3-pip
 
 # install pyspice and lcapy
-RUN pip3 install pyspice lcapy
+RUN pip3 install pyspice lcapy jupyterlab pandas
 
+# Install lcapy
 RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt install -y tzdata
 RUN apt install -y texlive-latex-base texlive-pictures texlive-latex-extra imagemagick ghostscript libjs-mathjax fonts-mathjax
+
+# set up jupyterlab
+RUN jupyter-lab --generate-config && \
+    sed -i "s/#c.NotebookApp.allow_origin = ''/c.NotebookApp.allow_origin = ''/g"  /root/.jupyter/jupyter_notebook_config.py && \
+    sed -i "s/#c.NotebookApp.token = '<generated>'/c.NotebookApp.token = ''/g"  /root/.jupyter/jupyter_notebook_config.py
+
